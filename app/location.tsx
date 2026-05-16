@@ -44,39 +44,58 @@ export default function LocationScreen() {
 }
 
 const styles = StyleSheet.create({
-
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    padding: 20,
+    backgroundColor: "#f4f7fb",
+    justifyContent: "center",
+    padding: 24,
   },
 
   title: {
-    fontSize: 30,
-    fontWeight: 'bold',
+    fontSize: 34,
+    fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 40,
-    color: '#1e3a8a',
+    color: "#1e3a8a",
+  },
+
+  input: {
+    backgroundColor: "#ffffff",
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 20,
+    fontSize: 18,
+    elevation: 2,
   },
 
   button: {
-    backgroundColor: '#2563eb',
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderRadius: 10,
-    marginBottom: 30,
+    backgroundColor: "#2563eb",
+    paddingVertical: 18,
+    borderRadius: 18,
+    alignItems: "center",
+    marginBottom: 20,
+    elevation: 4,
   },
 
   buttonText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    color: "#ffffff",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+
+  image: {
+    width: "100%",
+    height: 220,
+    borderRadius: 20,
+    marginBottom: 20,
   },
 
   locationText: {
     fontSize: 18,
-    marginBottom: 10,
+    fontWeight: "600",
+    color: "#111827",
+    marginTop: 5,
   },
-
 });

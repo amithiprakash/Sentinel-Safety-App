@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -5,32 +6,45 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  ScrollView,
   Alert,
-} from 'react-native';
+} from "react-native";
 
-import { useState } from 'react';
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from "expo-image-picker";
+import * as Location from "expo-location";
 
-export default function IncidentScreen() {
-
-  const [description, setDescription] = useState('');
+export default function ReportScreen() {
+  const [incidentType, setIncidentType] = useState("");
+  const [description, setDescription] = useState("");
   const [image, setImage] = useState<string | null>(null);
 
-  const pickImage = async () => {
+  const [location, setLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
 
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
+  useEffect(() => {
+    getLocation();
+  }, []);
 
-    if (!permissionResult.granted) {
-      Alert.alert('Permission Required', 'Please allow gallery access');
+  const getLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+
+    if (status !== "granted") {
+      Alert.alert("Permission Denied", "Location permission is required");
       return;
     }
 
-    const result = await 
-    ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
+    let currentLocation = await Location.getCurrentPositionAsync({});
+
+    setLocation({
+      latitude: currentLocation.coords.latitude,
+      longitude: currentLocation.coords.longitude,
+    });
+  };
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1,
     });
 
@@ -40,30 +54,30 @@ export default function IncidentScreen() {
   };
 
   const submitReport = () => {
-
-    if (description.trim() === '') {
-      Alert.alert('Error', 'Please enter incident description');
-      return;
-    }
-
     Alert.alert(
-      'Success',
-      'Incident Report Submitted Successfully'
+      "Success",
+      "Incident Report Submitted Successfully"
     );
 
-    setDescription('');
+    setIncidentType("");
+    setDescription("");
     setImage(null);
   };
 
   return (
-
-    <ScrollView contentContainerStyle={styles.container}>
-
+    <View style={styles.container}>
       <Text style={styles.title}>Incident Report</Text>
 
       <TextInput
-        placeholder="Describe Incident"
+        placeholder="Enter Incident Type"
         style={styles.input}
+        value={incidentType}
+        onChangeText={setIncidentType}
+      />
+
+      <TextInput
+        placeholder="Enter Description"
+        style={[styles.input, { height: 120 }]}
         multiline
         value={description}
         onChangeText={setDescription}
@@ -78,69 +92,80 @@ export default function IncidentScreen() {
       )}
 
       <TouchableOpacity
-        style={styles.submitButton}
+        style={[styles.button, { backgroundColor: "green" }]}
         onPress={submitReport}
       >
         <Text style={styles.buttonText}>Submit Report</Text>
       </TouchableOpacity>
 
-    </ScrollView>
+      {location && (
+        <View style={{ marginTop: 20 }}>
+          <Text style={styles.locationText}>
+            Latitude: {location.latitude}
+          </Text>
+
+          <Text style={styles.locationText}>
+            Longitude: {location.longitude}
+          </Text>
+        </View>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-
   container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: '#ffffff',
-    justifyContent: 'center',
+    flex: 1,
+    backgroundColor: "#f4f7fb",
+    justifyContent: "center",
+    padding: 24,
   },
 
   title: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 30,
-    color: '#1e3a8a',
+    fontSize: 34,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 40,
+    color: "#1e3a8a",
   },
 
   input: {
+    backgroundColor: "#ffffff",
     borderWidth: 1,
-    borderColor: '#cccccc',
-    borderRadius: 10,
-    padding: 15,
-    height: 120,
+    borderColor: "#d1d5db",
+    borderRadius: 18,
+    padding: 16,
     marginBottom: 20,
-    textAlignVertical: 'top',
-    fontSize: 16,
+    fontSize: 18,
+    elevation: 2,
   },
 
   button: {
-    backgroundColor: '#2563eb',
-    padding: 15,
-    borderRadius: 10,
+    backgroundColor: "#2563eb",
+    paddingVertical: 18,
+    borderRadius: 18,
+    alignItems: "center",
     marginBottom: 20,
-  },
-
-  submitButton: {
-    backgroundColor: '#16a34a',
-    padding: 15,
-    borderRadius: 10,
+    elevation: 4,
   },
 
   buttonText: {
-    color: '#ffffff',
-    textAlign: 'center',
-    fontSize: 18,
-    fontWeight: 'bold',
+    color: "#ffffff",
+    fontSize: 20,
+    fontWeight: "bold",
   },
 
   image: {
-    width: '100%',
+    width: "100%",
     height: 220,
-    borderRadius: 10,
+    borderRadius: 20,
     marginBottom: 20,
   },
 
+  locationText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#111827",
+    marginTop: 5,
+  },
 });
